@@ -3,11 +3,11 @@
 A garrysmod loading screen customizable by the players  
 Feel free to donate: https://www.paypal.me/kanalumaddela  
 
-Ex: https://www.maddela.me/loading/k-load/?steamid=76561198152390718
+Ex: https://www.maddela.org/k-load/v1/?steamid=76561198152390718
 
 Screenshots Below  
-Demo: https://www.maddela.me/loading/k-load/  
-Backend Demo: https://www.maddela.me/loading/k-load/usercp/
+Demo: https://www.maddela.org/k-load/v1/
+Backend Demo: https://www.maddela.org/k-load/v1/usercp/
 
 ### Features
 - Server Info
