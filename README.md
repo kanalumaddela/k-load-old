@@ -1,13 +1,13 @@
 # k-load (unsupported, better one coming soon)
 
 A garrysmod loading screen customizable by the players  
-Feel free to donate: https://www.paypal.me/kanalumaddela  
+Feel free to donate: https://www.paypal.me/samuelmaddela
 
-Ex: https://www.maddela.org/k-load/v1/?steamid=76561198152390718
+Ex: https://www.maddela.org/projects/k-load/v1/?steamid=76561198152390718
 
 Screenshots Below  
-Demo: https://www.maddela.org/k-load/v1/
-Backend Demo: https://www.maddela.org/k-load/v1/usercp/
+Demo: https://www.maddela.org/projects/k-load/v1/
+Backend Demo: https://www.maddela.org/projects/k-load/v1/usercp/
 
 ### Features
 - Server Info
