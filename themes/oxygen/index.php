@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="css.php?theme=<?php echo $theme.'&steamid='.$_GET['steamid']; ?>">
 </head>
 <body>
-<?php overlay();?>
+<?php overlay(); ?>
 <div id="wrapper">
     <div>
-        <?php userAvatar(""); ?>
+        <?php userAvatar(''); ?>
     </div>
     <div id="content">
         <div class="block one">

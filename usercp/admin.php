@@ -1,5 +1,8 @@
-<?php if(!isset($login)) {die();} ?>
-<?php if ($_SERVER['QUERY_STRING'] == 'admin') { ?>
+<?php if (!isset($login)) {
+    die();
+} ?>
+<?php if ($_SERVER['QUERY_STRING'] == 'admin') {
+    ?>
         <div class="col s12 m6 l4">
             <div class="card">
                 <div class="card-content">
@@ -45,7 +48,9 @@
                 </div>
             </div>
         </div>
-<?php } else if ($_SERVER['QUERY_STRING'] == 'logs') { ?>
+<?php
+} elseif ($_SERVER['QUERY_STRING'] == 'logs') {
+        ?>
         <div class="col s12">
             <div class="card">
                 <div class="card-content">
@@ -54,8 +59,13 @@
                 </div>
                 <div class="card-action row">
                     <a class="col s12 m3 waves-effect waves-light btn tooltipped tool" href="#modal_bottom" data-user_type="admin" data-post="wipe_logs" data-tooltip="Clear the error log">wipe logs</a>
-                    <pre id="logs" class="col s12"><?php if ( !empty(file_get_contents("../".$error_log_file)) ) { echo file_get_contents("../".$error_log_file); } else {echo 'There are no logs.';} ?></pre>
+                    <pre id="logs" class="col s12"><?php if (!empty(file_get_contents('../'.$error_log_file))) {
+            echo file_get_contents('../'.$error_log_file);
+        } else {
+            echo 'There are no logs.';
+        } ?></pre>
                 </div>
             </div>
         </div>
-<?php } ?>
+<?php
+    } ?>
