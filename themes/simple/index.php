@@ -28,11 +28,11 @@ p {
     margin: 0px auto 10px;
 }
 </style>
-<?php overlay();?>
+<?php overlay(); ?>
 <div id="wrapper">
-    <?php userAvatar("useravatar circle"); ?>
+    <?php userAvatar('useravatar circle'); ?>
     <p><?php echo $steamprofile['personaname']; ?></p>
-    <?php loadingBar(60);?>
+    <?php loadingBar(60); ?>
     <?php messages(); ?>
 </div>
 <script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>

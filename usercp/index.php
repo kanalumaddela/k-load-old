@@ -4,14 +4,14 @@ require '../includes/functions.php';
 require '../includes/fixes.php';
 require '../includes/steamauth/steamauth.php';
 
-if ( isset($_SESSION['steamid']) ) {
+if (isset($_SESSION['steamid'])) {
     require '../includes/mysql.php';
     require '../includes/steamauth/userInfo.php';
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
     if ($conn->connect_error) {
-        errorlog('[MySQL Error] - Failed to connect: ' . $conn->connect_error);
+        errorlog('[MySQL Error] - Failed to connect: '.$conn->connect_error);
     } else {
-        addUser( $steamprofile['steamid'], $steamprofile['personaname'] );
+        addUser($steamprofile['steamid'], $steamprofile['personaname']);
         getUser($_SESSION['steamid']);
     }
 }
@@ -19,7 +19,9 @@ if ( isset($_SESSION['steamid']) ) {
 <!doctype html>
 <html lang="en">
 <head>
-    <title><?php if (!empty($steamprofile['steamprofile'])) {echo $steamprofile['steamprofile'] . ' - ';}?>UserCP | K-Load</title>
+    <title><?php if (!empty($steamprofile['steamprofile'])) {
+    echo $steamprofile['steamprofile'].' - ';
+}?>UserCP | K-Load</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -30,23 +32,25 @@ if ( isset($_SESSION['steamid']) ) {
 </head>
 <body class="gradient-background">
 <?php
-if ( !isset($_SESSION['steamid']) ) {
+if (!isset($_SESSION['steamid'])) {
     echo '<div id="loginbox" class="row center animated fadeIn transition"><h3>Login is required</h3><div class="divider"></div>';
     loginbutton();
     echo '</div>';
 } else {
-?>
+    ?>
 <!-- Side Nav -->
-<ul id="sideNav" class="side-nav fixed<?php if (!isset($_SESSION['logged_in'])) {echo ' animated fadeInLeft';}?>">
+<ul id="sideNav" class="side-nav fixed<?php if (!isset($_SESSION['logged_in'])) {
+        echo ' animated fadeInLeft';
+    } ?>">
     <li>
         <div class="userView">
-            <a href="<?php echo substr($steamprofile['profileurl'],5);?>" target="_blank"><img class="circle" src="<?php echo $steamprofile['avatarfull'];?>"></a>
+            <a href="<?php echo substr($steamprofile['profileurl'], 5); ?>" target="_blank"><img class="circle" src="<?php echo $steamprofile['avatarfull']; ?>"></a>
         </div>
     </li>
-    <li><a class="center tooltipped" href="../?steamid=<?php echo $steamprofile['steamid'];?>" style="color:inherit;" target="_blank" data-tooltip="Demo with your settings"><?php echo $steamprofile['personaname'];?></a></li>
+    <li><a class="center tooltipped" href="../?steamid=<?php echo $steamprofile['steamid']; ?>" style="color:inherit;" target="_blank" data-tooltip="Demo with your settings"><?php echo $steamprofile['personaname']; ?></a></li>
     <li><div class="divider"></div></li>
     <li><a href="./">Home</a></li>
-    <?php echo '<li><a href="?logout">Logout</a></li>' . "\n"; ?>
+    <?php echo '<li><a href="?logout">Logout</a></li>'."\n"; ?>
     <li><div class="divider"></div></li>
     <li><a class="subheader">User Tools</a></li>
     <li><a href="./?theming">Themes</a></li>
@@ -54,12 +58,11 @@ if ( !isset($_SESSION['steamid']) ) {
     <li><a href="./?users">View Users</a></li>
     <?php
         if ($_SESSION['steamid'] == $admin_id) {
-            echo '<li><div class="divider"></div></li>' . "\n";
-            echo '<li><a class="subheader">Admin Tools</a></li>' . "\n";
-            echo '<li><a href="./?admin">Home</a></li>' . "\n";
-            echo '<li><a href="./?logs">Error Logs</a></li>' . "\n";
-        }
-    ?>
+            echo '<li><div class="divider"></div></li>'."\n";
+            echo '<li><a class="subheader">Admin Tools</a></li>'."\n";
+            echo '<li><a href="./?admin">Home</a></li>'."\n";
+            echo '<li><a href="./?logs">Error Logs</a></li>'."\n";
+        } ?>
 </ul>
 <!-- Mobile Nav -->
 <nav class="hide-on-med-and-up">
@@ -68,7 +71,10 @@ if ( !isset($_SESSION['steamid']) ) {
         <a href="#" class="brand-logo center">UserCP</a>
     </div>
 </nav>
-<main class="<?php if (!isset($_SESSION['logged_in'])) {echo ' animated zoomIn'; $_SESSION['logged_in'] = '1';}?>">
+<main class="<?php if (!isset($_SESSION['logged_in'])) {
+            echo ' animated zoomIn';
+            $_SESSION['logged_in'] = '1';
+        } ?>">
     <div class="row">
     <?php
     if ($banned != 0) {
@@ -78,11 +84,11 @@ if ( !isset($_SESSION['steamid']) ) {
     }
     if ($_SESSION['steamid'] == $admin_id && !empty($_SERVER['QUERY_STRING'])) {
         include 'admin.php';
-    }
-    ?>
+    } ?>
     </div>
 </main>
-<?php } ?>
+<?php
+} ?>
 
 <!-- Modal -->
 <div id="modal_bottom" class="modal bottom-sheet">
