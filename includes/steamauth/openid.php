@@ -15,26 +15,17 @@
  */
 class LightOpenID
 {
-    public $returnUrl
-         ;
-    public $required = []
-         ;
-    public $optional = []
-         ;
-    public $verify_peer = null
-         ;
-    public $capath = null
-         ;
-    public $cainfo = null
-         ;
-    public $cnmatch = null
-         ;
-    public $data
-         ;
-    public $oauth = []
-         ;
+    public $returnUrl;
+    public $required = [];
+    public $optional = [];
+    public $verify_peer = null;
+    public $capath = null;
+    public $cainfo = null;
+    public $cnmatch = null;
+    public $data;
+    public $oauth = [];
     public $curl_time_out = 30          // in seconds
-         ;
+;
     public $curl_connect_time_out = 30; // in seconds
     private $identity;
     private $claimed_id;
@@ -42,16 +33,13 @@ class LightOpenID
     protected $version;
     protected $trustRoot;
     protected $aliases;
-    protected $identifier_select = false
-            ;
+    protected $identifier_select = false;
     protected $ax = false;
     protected $sreg = false;
     protected $setup_url = null;
-    protected $headers = []
-            ;
+    protected $headers = [];
     protected $proxy = null;
-    protected $user_agent = 'LightOpenID'
-            ;
+    protected $user_agent = 'LightOpenID';
     protected $xrds_override_pattern = null;
     protected $xrds_override_replacement = null;
     protected static $ax_to_sreg = [
@@ -64,7 +52,7 @@ class LightOpenID
         'contact/country/home'    => 'country',
         'pref/language'           => 'language',
         'pref/timezone'           => 'timezone',
-        ];
+    ];
 
     public function __construct($host, $proxy = null)
     {
@@ -89,48 +77,48 @@ class LightOpenID
     public function __set($name, $value)
     {
         switch ($name) {
-        case 'identity':
-            if (strlen($value = trim((string) $value))) {
-                if (preg_match('#^xri:/*#i', $value, $m)) {
-                    $value = substr($value, strlen($m[0]));
-                } elseif (!preg_match('/^(?:[=@+\$!\(]|https?:)/i', $value)) {
-                    $value = "http://$value";
+            case 'identity':
+                if (strlen($value = trim((string) $value))) {
+                    if (preg_match('#^xri:/*#i', $value, $m)) {
+                        $value = substr($value, strlen($m[0]));
+                    } elseif (!preg_match('/^(?:[=@+\$!\(]|https?:)/i', $value)) {
+                        $value = "http://$value";
+                    }
+                    if (preg_match('#^https?://[^/]+$#i', $value, $m)) {
+                        $value .= '/';
+                    }
                 }
-                if (preg_match('#^https?://[^/]+$#i', $value, $m)) {
-                    $value .= '/';
+                $this->$name = $this->claimed_id = $value;
+                break;
+            case 'trustRoot':
+            case 'realm':
+                $this->trustRoot = trim($value);
+                break;
+            case 'xrdsOverride':
+                if (is_array($value)) {
+                    list($pattern, $replacement) = $value;
+                    $this->xrds_override_pattern = $pattern;
+                    $this->xrds_override_replacement = $replacement;
+                } else {
+                    trigger_error('Invalid value specified for "xrdsOverride".', E_USER_ERROR);
                 }
-            }
-            $this->$name = $this->claimed_id = $value;
-            break;
-        case 'trustRoot':
-        case 'realm':
-            $this->trustRoot = trim($value);
-            break;
-        case 'xrdsOverride':
-            if (is_array($value)) {
-                list($pattern, $replacement) = $value;
-                $this->xrds_override_pattern = $pattern;
-                $this->xrds_override_replacement = $replacement;
-            } else {
-                trigger_error('Invalid value specified for "xrdsOverride".', E_USER_ERROR);
-            }
-            break;
+                break;
         }
     }
 
     public function __get($name)
     {
         switch ($name) {
-        case 'identity':
-            // We return claimed_id instead of identity,
-            // because the developer should see the claimed identifier,
-            // i.e. what he set as identity, not the op-local identifier (which is what we verify)
-            return $this->claimed_id;
-        case 'trustRoot':
-        case 'realm':
-            return $this->trustRoot;
-        case 'mode':
-            return empty($this->data['openid_mode']) ? null : $this->data['openid_mode'];
+            case 'identity':
+                // We return claimed_id instead of identity,
+                // because the developer should see the claimed identifier,
+                // i.e. what he set as identity, not the op-local identifier (which is what we verify)
+                return $this->claimed_id;
+            case 'trustRoot':
+            case 'realm':
+                return $this->trustRoot;
+            case 'mode':
+                return empty($this->data['openid_mode']) ? null : $this->data['openid_mode'];
         }
     }
 
@@ -356,110 +344,110 @@ class LightOpenID
 
         $params = http_build_query($params, '', '&');
         switch ($method) {
-        case 'GET':
-            $opts = [
-                'http' => [
-                    'method'        => 'GET',
-                    'header'        => 'Accept: application/xrds+xml, */*',
-                    'user_agent'    => $this->user_agent,
-                    'ignore_errors' => true,
-                ],
-                'ssl' => [
-                    'CN_match' => $this->cnmatch,
-                ],
-            ];
-            $url = $url.($params ? '?'.$params : '');
-            if (!empty($this->proxy)) {
-                $opts['http']['proxy'] = $this->proxy_url();
-            }
-            break;
-        case 'POST':
-            $opts = [
-                'http' => [
-                    'method'        => 'POST',
-                    'header'        => 'Content-type: application/x-www-form-urlencoded',
-                    'user_agent'    => $this->user_agent,
-                    'content'       => $params,
-                    'ignore_errors' => true,
-                ],
-                'ssl' => [
-                    'CN_match' => $this->cnmatch,
-                ],
-            ];
-            if (!empty($this->proxy)) {
-                $opts['http']['proxy'] = $this->proxy_url();
-            }
-            break;
-        case 'HEAD':
-            // We want to send a HEAD request, but since get_headers() doesn't
-            // accept $context parameter, we have to change the defaults.
-            $default = stream_context_get_options(stream_context_get_default());
-
-            // PHP does not reset all options. Instead, it just sets the options
-            // available in the passed array, therefore set the defaults manually.
-            $default += [
-                'http' => [],
-                'ssl'  => [],
-            ];
-            $default['http'] += [
-                'method'        => 'GET',
-                'header'        => '',
-                'user_agent'    => '',
-                'ignore_errors' => false,
-            ];
-            $default['ssl'] += [
-                'CN_match' => '',
-            ];
-
-            $opts = [
-                'http' => [
-                    'method'        => 'HEAD',
-                    'header'        => 'Accept: application/xrds+xml, */*',
-                    'user_agent'    => $this->user_agent,
-                    'ignore_errors' => true,
-                ],
-                'ssl' => [
-                    'CN_match' => $this->cnmatch,
-                ],
-            ];
-
-            // Enable validation of the SSL certificates.
-            if ($this->verify_peer) {
-                $default['ssl'] += [
-                    'verify_peer' => false,
-                    'capath'      => '',
-                    'cafile'      => '',
+            case 'GET':
+                $opts = [
+                    'http' => [
+                        'method'        => 'GET',
+                        'header'        => 'Accept: application/xrds+xml, */*',
+                        'user_agent'    => $this->user_agent,
+                        'ignore_errors' => true,
+                    ],
+                    'ssl' => [
+                        'CN_match' => $this->cnmatch,
+                    ],
                 ];
-                $opts['ssl'] += [
-                    'verify_peer' => true,
-                    'capath'      => $this->capath,
-                    'cafile'      => $this->cainfo,
-                ];
-            }
-
-            // Change the stream context options.
-            stream_context_get_default($opts);
-
-            $headers = get_headers($url.($params ? '?'.$params : ''));
-
-            // Restore the stream context options.
-            stream_context_get_default($default);
-
-            if (!empty($headers)) {
-                if (intval(substr($headers[0], strlen('HTTP/1.1 '))) == 405) {
-                    // The server doesn't support HEAD - emulate it with a GET.
-                    $args = func_get_args();
-                    $args[1] = 'GET';
-                    call_user_func_array([$this, 'request_streams'], $args);
-                    $headers = $this->headers;
-                } else {
-                    $headers = $this->parse_header_array($headers, $update_claimed_id);
+                $url = $url.($params ? '?'.$params : '');
+                if (!empty($this->proxy)) {
+                    $opts['http']['proxy'] = $this->proxy_url();
                 }
-            } else {
-                $headers = [];
-            }
+                break;
+            case 'POST':
+                $opts = [
+                    'http' => [
+                        'method'        => 'POST',
+                        'header'        => 'Content-type: application/x-www-form-urlencoded',
+                        'user_agent'    => $this->user_agent,
+                        'content'       => $params,
+                        'ignore_errors' => true,
+                    ],
+                    'ssl' => [
+                        'CN_match' => $this->cnmatch,
+                    ],
+                ];
+                if (!empty($this->proxy)) {
+                    $opts['http']['proxy'] = $this->proxy_url();
+                }
+                break;
+            case 'HEAD':
+                // We want to send a HEAD request, but since get_headers() doesn't
+                // accept $context parameter, we have to change the defaults.
+                $default = stream_context_get_options(stream_context_get_default());
 
-            return $headers;
+                // PHP does not reset all options. Instead, it just sets the options
+                // available in the passed array, therefore set the defaults manually.
+                $default += [
+                    'http' => [],
+                    'ssl'  => [],
+                ];
+                $default['http'] += [
+                    'method'        => 'GET',
+                    'header'        => '',
+                    'user_agent'    => '',
+                    'ignore_errors' => false,
+                ];
+                $default['ssl'] += [
+                    'CN_match' => '',
+                ];
+
+                $opts = [
+                    'http' => [
+                        'method'        => 'HEAD',
+                        'header'        => 'Accept: application/xrds+xml, */*',
+                        'user_agent'    => $this->user_agent,
+                        'ignore_errors' => true,
+                    ],
+                    'ssl' => [
+                        'CN_match' => $this->cnmatch,
+                    ],
+                ];
+
+                // Enable validation of the SSL certificates.
+                if ($this->verify_peer) {
+                    $default['ssl'] += [
+                        'verify_peer' => false,
+                        'capath'      => '',
+                        'cafile'      => '',
+                    ];
+                    $opts['ssl'] += [
+                        'verify_peer' => true,
+                        'capath'      => $this->capath,
+                        'cafile'      => $this->cainfo,
+                    ];
+                }
+
+                // Change the stream context options.
+                stream_context_get_default($opts);
+
+                $headers = get_headers($url.($params ? '?'.$params : ''));
+
+                // Restore the stream context options.
+                stream_context_get_default($default);
+
+                if (!empty($headers)) {
+                    if (intval(substr($headers[0], strlen('HTTP/1.1 '))) == 405) {
+                        // The server doesn't support HEAD - emulate it with a GET.
+                        $args = func_get_args();
+                        $args[1] = 'GET';
+                        call_user_func_array([$this, 'request_streams'], $args);
+                        $headers = $this->headers;
+                    } else {
+                        $headers = $this->parse_header_array($headers, $update_claimed_id);
+                    }
+                } else {
+                    $headers = [];
+                }
+
+                return $headers;
         }
 
         if ($this->verify_peer) {
@@ -859,7 +847,7 @@ class LightOpenID
             'openid.mode'       => $immediate ? 'checkid_immediate' : 'checkid_setup',
             'openid.identity'   => $this->identity,
             'openid.trust_root' => $this->trustRoot,
-            ] + $this->sregParams();
+        ] + $this->sregParams();
 
         return $this->build_url(parse_url($this->server), ['query' => http_build_query($params, '', '&')]);
     }
@@ -956,7 +944,7 @@ class LightOpenID
             'openid.assoc_handle' => $this->data['openid_assoc_handle'],
             'openid.signed'       => $this->data['openid_signed'],
             'openid.sig'          => $this->data['openid_sig'],
-            ];
+        ];
 
         if (isset($this->data['openid_ns'])) {
             // We're dealing with an OpenID 2.0 server, so let's set an ns
