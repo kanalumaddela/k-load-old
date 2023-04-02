@@ -10,7 +10,7 @@ if ($_SERVER['QUERY_STRING'] == 'playlist') {
     echo 'https://www.youtube.com/watch?v=Y6ljFaKRTrI&list=PLM9DkUx04Ya12mPqj-hAUmzjv_E-XSc3b'.'</br>';
     echo 'https://www.youtube.com/watch?v=Y6ljFaKRTrI&list=PLM9DkUx04Ya12mPqj-hAUmzjv_E-XSc3b - <strong>'.getYouTubePlaylistID('https://www.youtube.com/watch?v=Y6ljFaKRTrI&list=PLM9DkUx04Ya12mPqj-hAUmzjv_E-XSc3b').'</strong></br>';
     echo 'https://www.youtube.com/watch?list=PLM9DkUx04Ya12mPqj-hAUmzjv_E-XSc3b - <strong>'.getYouTubePlaylistID('https://www.youtube.com/watch?list=PLM9DkUx04Ya12mPqj-hAUmzjv_E-XSc3b').'</strong>';
-    die();
+    exit;
 }
 if ($_SERVER['QUERY_STRING'] == 'imgur') {
     if (preg_match('#^.+/([^/]+)(\.[^/]+)?$#', 'https://i.imgur.com/26xcQUF.jpg', $matches)) {
@@ -20,14 +20,14 @@ if ($_SERVER['QUERY_STRING'] == 'imgur') {
     print_r(parse_url('https://i.imgur.com/26xcQUF.jpg'));
     echo '<br/>';
     echo getImgurID('https://i.imgur.com/26xcQUF.jpg');
-    die();
+    exit;
 }
 
 if (isset($_POST) && isset($_SESSION['steamid'])) {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
     if ($conn->connect_error) {
         errorlog('[MySQL Error] - '.$conn->connect_error);
-        die('<h5>There was an issue connecting to the MySQL server. Please check the error logs.</h5>');
+        exit('<h5>There was an issue connecting to the MySQL server. Please check the error logs.</h5>');
     }
     if ($_SESSION['steamid'] == $admin_id && $_POST['type'] == 'admin') {
         switch ($_POST['action']) {
